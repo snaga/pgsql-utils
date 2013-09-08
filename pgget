@@ -1,0 +1,40 @@
+#!/usr/bin/perl
+
+# pgget
+#
+# Copyright(c) 2013 Satoshi Nagayasu <snaga@uptime.jp>
+
+use strict vars;
+
+my $PGDATA = shift;
+my $PARAM = shift;
+
+if ( !$PARAM )
+{
+	print "Usage: $0 <PGDATA> <PARAM>\n";
+	exit 1;
+}
+
+my $FILE = $PGDATA . "/postgresql.conf";
+
+open(F, $FILE) || die($!);
+while(<F>)
+{
+	if ( /^(#*)$PARAM *= *([^\t ]+)/ )
+	{
+		my $disabled = $1;
+		my $curval = $2;
+
+		if ( $disabled eq "#" )
+		{
+			print "$PARAM is disabled. (default:$curval)\n";
+		}
+		else
+		{
+			print "$PARAM is $curval.\n";
+		}
+	}
+}
+close(F);
+
+exit 0;

@@ -1,0 +1,47 @@
+#!/usr/bin/perl
+
+# pgset
+#
+# Copyright(c) 2013 Satoshi Nagayasu <snaga@uptime.jp>
+
+use strict vars;
+
+my $PGDATA  = shift;
+my $PARAM = shift;
+my $VALUE = shift;
+
+if ( !$VALUE )
+{
+	print "Usage: $0 <PGDATA> <PARAM> <VALUE>\n";
+	exit 1;
+}
+
+my $FILE = $PGDATA . "/postgresql.conf";
+
+open(N, "> $FILE.new") || die($!);
+
+open(F, $FILE) || die($!);
+while(<F>)
+{
+	if ( /^#*$PARAM *= *([^\t ]+)(.*)/ )
+	{
+		my $curval = $1;
+		my $comment = $2;
+
+		print N $PARAM . " = " . $VALUE . $comment . "\n";
+	}
+	else
+	{
+		print N $_;
+	}
+}
+close(F);
+
+close(N);
+
+system("diff -rc $FILE $FILE.new");
+
+rename($FILE, "$FILE.bak") || die($!);
+rename("$FILE.new", $FILE) || die($!);
+
+exit 0;
