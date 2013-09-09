@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# fetch_and_push_branches_postgres2
+#
+# Copyright(c) 2013 Satoshi Nagayasu <snaga@uptime.jp>
+
+git remote -v
+
+git fetch postgres2
+
+BRANCHES="master pgstat2 pgstattuple2"
+
+for b in ${BRANCHES};
+  do git checkout $b || exit 1;
+     echo Merging postgres2/$b into $b...
+     git merge remotes/postgres2/$b || exit 2;
+     git push origin $b || exit 3;
+done;

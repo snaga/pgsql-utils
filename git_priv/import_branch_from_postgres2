@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# import_branch_from_postgres2
+#
+# Copyright(c) 2013 Satoshi Nagayasu <snaga@uptime.jp>
+
+B=$1
+if [ -z "$B" ]; then
+  echo "Usage: $0 <branch>"
+  exit 1 
+fi;
+
+git branch $B || exit 2
+git checkout $B || exit 3
+git merge remotes/postgres2/$B || exit 4
+
+

@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# setup_postgres_on_github
+#
+# Copyright(c) 2013 Satoshi Nagayasu <snaga@uptime.jp>
+
+git remote -v
+
+git remote add postgresql_org http://git.postgresql.org/git/postgresql.git
+git remote add postgres2 /home/snaga/pgsql/postgresql.git/postgresql
+
+git remote -v
+
