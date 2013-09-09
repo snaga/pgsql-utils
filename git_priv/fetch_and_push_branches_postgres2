@@ -14,5 +14,6 @@ for b in ${BRANCHES};
   do git checkout $b || exit 1;
      echo Merging postgres2/$b into $b...
      git merge remotes/postgres2/$b || exit 2;
+     echo Pushing $b to origin/$b on github...
      git push origin $b || exit 3;
 done;
