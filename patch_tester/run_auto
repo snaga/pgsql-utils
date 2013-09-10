@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# run_patch_test
+#
+# Copyright(c) 2013 Uptime Technologies, LLC.
+
+patchfile=$1
+email=$2
+
+./run_patch_test $patchfile > /tmp/patch_test.$$
+
+id=`cat /tmp/patch_test.$$`
+
+./report_patch_test $id $email
