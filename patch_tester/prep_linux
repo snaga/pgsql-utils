@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# prep_linux
+#
+# Copyright(c) 2013 Uptime Technologies, LLC.
+
+yum update -y
+yum install -y git patch automake gcc readline-devel zlib-devel bison
+
+yum install -y httpd php
+
+mkdir /pgsql
+cd /pgsql
+git clone git://git.postgresql.org/git/postgresql.git
+git clone https://github.com/snaga/pgsql-utils.git
+
+
