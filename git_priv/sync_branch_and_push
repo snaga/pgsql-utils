@@ -1,0 +1,33 @@
+#!/bin/sh
+
+# sync_branch_and_push
+#
+# Copyright(c) 2013 Satoshi Nagayasu <snaga@uptime.jp>
+
+git fetch postgres2
+
+b=$1
+if [ -z "$b" ]; then
+  echo "Usage: $0 <branch>"
+  exit 1 
+fi;
+
+echo "Moving into the master branch..."
+git checkout master
+
+echo "Deleting $b branch..."
+git branch -D $b || echo "git branch -D $b failed."
+
+echo "Propagating $b branch deletion..."
+git push origin :$b
+
+echo "Creating new branch $b..."
+git branch $b || exit 3
+echo "Moving into new branch $b..."
+git checkout $b || exit 4
+
+echo "Merging postgres2/$b into $b..."
+git merge remotes/postgres2/$b || exit 4;
+
+echo "Pushing $b to origin/$b on github..."
+git push origin $b || exit 5;
