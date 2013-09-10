@@ -22,21 +22,23 @@ echo "Subject: [patch test] #$id" >> /tmp/report.$$
 echo "To: $email" >> /tmp/report.$$
 
 if [ -f $id/apply_patch.log ]; then
-  cat $id/apply_patch.log >> /tmp/report.$$
+    echo ---------------------------------------------- >> /tmp/report.$$
+    cat $id/apply_patch.log >> /tmp/report.$$
 fi
 
-echo ---------------------------------------------- >> /tmp/report.$$
 
 if [ -f $id/build_all.log ]; then
-  cat $id/build_all.log >> /tmp/report.$$
+    echo ---------------------------------------------- >> /tmp/report.$$
+    cat $id/build_all.log >> /tmp/report.$$
+fi
+
+if [ -f $id/regress_test.log ]; then
+    echo ---------------------------------------------- >> /tmp/report.$$
+    cat $id/regress_test.log >> /tmp/report.$$
 fi
 
 echo ---------------------------------------------- >> /tmp/report.$$
-
-if [ -f $id/regress_test.log ]; then
-  cat $id/regress_test.log >> /tmp/report.$$
-fi
-
+echo >> /tmp/report.$$
 echo EOF >> /tmp/report.$$
 
 /usr/lib/sendmail $email < /tmp/report.$$

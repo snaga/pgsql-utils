@@ -36,19 +36,19 @@ function apply_patch()
 
   file=`basename $patchfile`
   echo "Applying patch $file..."
-  patch -p1 < ../$file || echo "failed."
+  patch -p1 < ../$file || return $?
   echo "done."
 }
 
 function build_all()
 {
-  ./configure --prefix=/tmp/pgsql --enable-debug
-  make -j 4
+  ./configure --prefix=/tmp/pgsql --enable-debug || return $?
+  make -j 4 || return $?
 }
 
 function regress_test()
 {
-  make check
+  make check || return $?
 }
 
 patchfile=$1
@@ -59,7 +59,6 @@ if [ -z "$patchfile" -o ! -f "$patchfile" ]; then
 fi
 
 get_id
-echo id = $id
 
 if [ -d $id ]; then
   echo "$id already eixsts."
@@ -68,6 +67,8 @@ fi
 mkdir -p $id
 
 logdir=`pwd`/$id
+
+echo $id
 
 prepare_files > $logdir/prepare_files.log 2>&1 || exit 1
 
