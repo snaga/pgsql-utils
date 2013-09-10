@@ -1,0 +1,82 @@
+#!/bin/sh
+
+# run_patch_test
+#
+# Copyright(c) 2013 Uptime Technologies, LLC.
+
+LANG=C
+export LANG
+
+function get_id()
+{
+    if [ ! -f seq ]; then
+	echo 0 > seq
+    fi
+
+    id=`cat seq`
+    id=`expr $id + 1`
+    echo $id > seq
+}
+
+function prepare_files()
+{
+  pushd postgresql
+  git pull
+  popd
+
+  cp -r postgresql $id
+  cp -r $patchfile $id
+
+}
+
+function apply_patch()
+{
+  git log -n 1
+  echo
+
+  file=`basename $patchfile`
+  echo "Applying patch $file..."
+  patch -p1 < ../$file || echo "failed."
+  echo "done."
+}
+
+function build_all()
+{
+  ./configure --prefix=/tmp/pgsql --enable-debug
+  make -j 4
+}
+
+function regress_test()
+{
+  make check
+}
+
+patchfile=$1
+
+if [ -z "$patchfile" -o ! -f "$patchfile" ]; then
+  echo "Usage: $0 <patch>"
+  exit 0
+fi
+
+get_id
+echo id = $id
+
+if [ -d $id ]; then
+  echo "$id already eixsts."
+  exit 1
+fi
+mkdir -p $id
+
+logdir=`pwd`/$id
+
+prepare_files > $logdir/prepare_files.log 2>&1 || exit 1
+
+cd $id/postgresql
+
+apply_patch > $logdir/apply_patch.log 2>&1 || exit 11
+
+build_all > $logdir/build_all.log 2>&1 || exit 12
+
+regress_test > $logdir/regress_test.log 2>&1 || exit 13
+
+exit 0

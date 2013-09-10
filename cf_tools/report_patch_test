@@ -1,0 +1,44 @@
+#!/bin/sh
+
+# report_patch_test
+#
+# Copyright(c) 2013 Uptime Technologies, LLC.
+
+id=$1
+email=$2
+
+if [ ! -d $id ]; then
+   echo "$id not found."
+   exit 1
+fi
+
+if [ -z "$email" ]; then
+   echo "Usage: $0 <id> <email>"
+   exit 2
+fi
+
+echo "From: cf-patch-test-no-reply@uptimeforce.com" > /tmp/report.$$
+echo "Subject: [patch test] #$id" >> /tmp/report.$$
+echo "To: $email" >> /tmp/report.$$
+
+if [ -f $id/apply_patch.log ]; then
+  cat $id/apply_patch.log >> /tmp/report.$$
+fi
+
+echo ---------------------------------------------- >> /tmp/report.$$
+
+if [ -f $id/build_all.log ]; then
+  cat $id/build_all.log >> /tmp/report.$$
+fi
+
+echo ---------------------------------------------- >> /tmp/report.$$
+
+if [ -f $id/regress_test.log ]; then
+  cat $id/regress_test.log >> /tmp/report.$$
+fi
+
+echo EOF >> /tmp/report.$$
+
+/usr/lib/sendmail $email < /tmp/report.$$
+
+rm -rf /tmp/report.$$
