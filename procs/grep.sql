@@ -18,7 +18,9 @@ BEGIN
                 FROM pg_attribute a, pg_class c
                WHERE c.relname = _relname
                  AND c.relkind IN ( 'r', 'v' )
-                 AND c.oid = a.attrelid LOOP
+                 AND c.oid = a.attrelid 
+                 AND a.attnum > 0
+               ORDER BY a.attnum LOOP
     IF _attlist = '' THEN
       _attlist = 'coalesce("' || _rec.attname || '"::text,'''')';
     ELSE
