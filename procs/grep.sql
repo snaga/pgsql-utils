@@ -4,7 +4,7 @@
 -- Copyright(c) 2013 Uptime Technologies, LLC.
 --
 CREATE OR REPLACE FUNCTION grep(searchkey TEXT, relname NAME)
-RETURNS table("relation" TEXT, "match" TEXT)
+RETURNS table("match" TEXT)
 LANGUAGE 'plpgsql'
 AS $$
 DECLARE
@@ -23,14 +23,14 @@ BEGIN
 
     )
     SELECT INTO _query string_agg(
-        '    SELECT ' || quote_literal(full_name) || ', (' || "table" || ')::text' ||
+        '    SELECT regexp_replace(' || quote_literal(full_name) || ', ''^public\.'', '''') || '','' || regexp_replace(regexp_replace((' || "table" || ')::text, ''^\('', ''''), ''\)$'', '''') ' ||
            ' FROM ' || "full_name" ||
            ' WHERE (' || "table" || ')::text ~ ' || quote_literal(searchkey),
         E'\nUNION ALL\n'
     )
     FROM t;
 
-    RAISE NOTICE E'Query is\n%', _query;
+--    RAISE NOTICE E'Query is\n%', _query;
 
     RETURN QUERY EXECUTE _query;
 END;
